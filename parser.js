@@ -60,7 +60,7 @@ function customSplit(str) {
 }
 
 
-try {
+/* try {
 
     //console.log(parse("()())())"));
     console.log(parse("(akjsckajsc)"));
@@ -71,4 +71,6 @@ try {
     
 } catch (e) {
     console.error(e);
-}
+} */
+
+module.exports = parse
