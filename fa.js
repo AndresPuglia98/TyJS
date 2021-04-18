@@ -6,17 +6,18 @@ class FiniteAutomaton {
   */
   static makeTransitions(it) {
     return [...it].reduce((acc, [s0, sym, s1]) => {
-      const s0Trans = acc.get(s0);
+      let s0Trans = acc.get(s0);
       if (!s0Trans) {
         s0Trans = new Map();
         acc.set(s0, s0Trans);
       }
-      const s0SymStates = s0Trans.get(sym);
+      let s0SymStates = s0Trans.get(sym);
       if (!s0SymStates) {
         s0SymStates = new Set();
         s0Trans.set(sym, s0SymStates);
       }
       s0SymStates.add(s1);
+      return acc;
     }, new Map());
   }
 
@@ -154,15 +155,14 @@ class FiniteAutomaton {
    * 
    * @returns {boolean}
   */
-  isComplete() {
+   isComplete() {
     const alphabet = this.alphabet();
     for (const trans of this.transitions.values()) {
-        const symbols = trans.keys();
-        for (const symbol of alphabet) {
-            if (!symbols.has(symbol)) {
-                return false;
-            }
+      for (const symbol of alphabet) {
+        if (!trans.has(symbol)) {
+          return false;
         }
+      }
     }
     return true;
   }
@@ -244,3 +244,5 @@ class FiniteAutomaton {
     throw new Error('FiniteAutomaton.dfa() is not implemented yet!');
   }
 } // class FiniteAutomaton
+
+module.exports = { FiniteAutomaton };
