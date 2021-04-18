@@ -7,7 +7,12 @@ let automaton = new fa.FiniteAutomaton({ start: 1, finals: [2], transitions: [ [
 // }
 console.log(automaton.transitions)
 console.log(automaton.isComplete())
+console.log(automaton.isDeterministic());
+
+
 
 newAutomaton = automaton.complete()
 console.log(newAutomaton.transitions)
 console.log(newAutomaton.isComplete())
+
+console.log(newAutomaton.closure())

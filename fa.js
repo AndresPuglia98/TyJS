@@ -76,12 +76,14 @@ class FiniteAutomaton {
     const result = new Set();
     while (pending.length > 0) {
       const state = pending.pop();
-      result.add(pending);
+      result.add(state);
       const stateTrans = this.transitions.get(state);
       if (stateTrans) {
-        for (const [symbol, target] of stateTrans.entries()) {
-          if (!result.has(target) && (!withSymbols || withSymbols.has(symbol))) {
-            pending.push(target);
+        for (const [symbol, targets] of stateTrans.entries()) {
+          for (const target of targets) {
+            if (!result.has(target) && (!withSymbols || withSymbols.has(symbol))) {
+              pending.push(target);
+            }
           }
         }
       }
@@ -233,7 +235,7 @@ class FiniteAutomaton {
   isDeterministic() {
     for (const trans of this.transitions.values()) {
       for (const target of trans.values()) {
-        if (target.length > 1) {
+        if (target.size > 1) {
           return false;
         }
       }
@@ -246,7 +248,11 @@ class FiniteAutomaton {
    * @returns {FiniteAutomaton}
   */
   dfa() {
-    throw new Error('FiniteAutomaton.dfa() is not implemented yet!');
+    if (this.isDeterministic()) {
+      return this;
+    } else {
+      throw new Error('FiniteAutomaton.dfa() is not implemented yet!');
+    }
   }
 } // class FiniteAutomaton
 
