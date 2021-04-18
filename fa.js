@@ -155,7 +155,7 @@ class FiniteAutomaton {
    * 
    * @returns {boolean}
   */
-  isComplete() {
+   isComplete() {
     const alphabet = this.alphabet();
     for (const trans of this.transitions.values()) {
       for (const symbol of alphabet) {
@@ -250,4 +250,4 @@ class FiniteAutomaton {
   }
 } // class FiniteAutomaton
 
-module.exports = { FiniteAutomaton }
+module.exports = { FiniteAutomaton };
