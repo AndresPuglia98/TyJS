@@ -290,6 +290,11 @@ class FiniteAutomaton {
             if (!newStates.has(goToSet)) {
               newStates.set(goToSet, finalNumber);
               newTransitions.push([newStates.get(currentStateSet), symbol, finalNumber]);
+              for (const state of goToSet) {
+                if (this.isFinal(state)) {
+                  newFinals.push(finalNumber)
+                }
+              }
               finalNumber++;
               pending.push(goToSet);
             } else {
@@ -298,6 +303,7 @@ class FiniteAutomaton {
           }
         }
       }
+      return new this.constructor({ start: 0, newFinals, newTransitions })
     }
   }
 } // class FiniteAutomaton
