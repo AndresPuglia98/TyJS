@@ -60,6 +60,17 @@ class FiniteAutomaton {
     const stateTrans = this.transitions.get(state);
     return [...stateTrans && stateTrans.get(symbol)];
   }
+
+  goTo(states, symbol) {
+    const output = new Set()
+    for (const state of states) {
+      const canGo = this.canGoTo(state, symbol)
+      for (const goState of canGo) {
+        output.add(goState)
+      }
+    }
+    return this.closureSet(output)
+  }
   
   /** A `Set` with all the states reachable from the given `from` state. If the
    * `withSymbols` set of symbols is given, only transitions with those symbols
@@ -89,6 +100,15 @@ class FiniteAutomaton {
       }
     }
     return result;
+  }
+
+  closureSet(from) {
+    const finalSet = new Set()
+    for (const state of from) {
+      const clo = this.closure(state, '')
+      clo.forEach(finalSet.add, finalSet)
+    }
+    return finalSet
   }
 
   /** The `Set` of all states in this automaton, reachable from the start state.
@@ -251,7 +271,33 @@ class FiniteAutomaton {
     if (this.isDeterministic()) {
       return this;
     } else {
-      throw new Error('FiniteAutomaton.dfa() is not implemented yet!');
+      const newStates = new Map();
+      const newFinals = [];
+      const newTransitions = [];
+
+      const alphabet = this.alphabet();
+      const stateSet = this.closureSet(this.start);
+      newStates.set(stateSet, 0);
+      const finalNumber = 1;
+
+      const pending = [stateSet];
+
+      while (pending.length > 0) {
+        const currentStateSet = pending.pop();
+        for (const symbol of alphabet) {
+          const goToSet = goTo(currentStateSet, symbol);
+          if (goToSet.size() > 0) {
+            if (!newStates.has(goToSet)) {
+              newStates.set(goToSet, finalNumber);
+              newTransitions.push([newStates.get(currentStateSet), symbol, finalNumber]);
+              finalNumber++;
+              pending.push(goToSet);
+            } else {
+              newTransitions.push([newStates.get(currentStateSet), symbol, newStates.get(stateSet)]);
+            }
+          }
+        }
+      }
     }
   }
 } // class FiniteAutomaton
