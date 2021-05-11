@@ -1,0 +1,310 @@
+{
+  type: 'curlyOpenBracket',
+  value: '{',
+  text: '{',
+  toString: [Function: tokenToString],
+  offset: 0,
+  lineBreaks: 0,
+  line: 1,
+  col: 1
+}
+{
+  type: 'whitespace',
+  value: '\n   ',
+  text: '\n   ',
+  toString: [Function: tokenToString],
+  offset: 1,
+  lineBreaks: 1,
+  line: 1,
+  col: 2
+}
+{
+  type: 'lineComment',
+  value: '// comments\n',
+  text: '// comments\n',
+  toString: [Function: tokenToString],
+  offset: 5,
+  lineBreaks: 1,
+  line: 2,
+  col: 4
+}
+{
+  type: 'whitespace',
+  value: '   ',
+  text: '   ',
+  toString: [Function: tokenToString],
+  offset: 17,
+  lineBreaks: 0,
+  line: 3,
+  col: 1
+}
+{
+  type: 'json5identifier',
+  value: 'unquoted',
+  text: 'unquoted',
+  toString: [Function: tokenToString],
+  offset: 20,
+  lineBreaks: 0,
+  line: 3,
+  col: 4
+}
+{
+  type: 'colon',
+  value: ':',
+  text: ':',
+  toString: [Function: tokenToString],
+  offset: 28,
+  lineBreaks: 0,
+  line: 3,
+  col: 12
+}
+{
+  type: 'whitespace',
+  value: ' ',
+  text: ' ',
+  toString: [Function: tokenToString],
+  offset: 29,
+  lineBreaks: 0,
+  line: 3,
+  col: 13
+}
+{
+  type: 'json5string',
+  value: '"and you can quote me on that"',
+  text: '"and you can quote me on that"',
+  toString: [Function: tokenToString],
+  offset: 30,
+  lineBreaks: 0,
+  line: 3,
+  col: 14
+}
+{
+  type: 'comma',
+  value: ',',
+  text: ',',
+  toString: [Function: tokenToString],
+  offset: 60,
+  lineBreaks: 0,
+  line: 3,
+  col: 44
+}
+{
+  type: 'whitespace',
+  value: '\n   ',
+  text: '\n   ',
+  toString: [Function: tokenToString],
+  offset: 61,
+  lineBreaks: 1,
+  line: 3,
+  col: 45
+}
+{
+  type: 'json5identifier',
+  value: 'singleQuotes',
+  text: 'singleQuotes',
+  toString: [Function: tokenToString],
+  offset: 65,
+  lineBreaks: 0,
+  line: 4,
+  col: 4
+}
+{
+  type: 'colon',
+  value: ':',
+  text: ':',
+  toString: [Function: tokenToString],
+  offset: 77,
+  lineBreaks: 0,
+  line: 4,
+  col: 16
+}
+{
+  type: 'whitespace',
+  value: ' ',
+  text: ' ',
+  toString: [Function: tokenToString],
+  offset: 78,
+  lineBreaks: 0,
+  line: 4,
+  col: 17
+}
+{
+  type: 'json5string',
+  value: `'I can use "double quotes" here'`,
+  text: `'I can use "double quotes" here'`,
+  toString: [Function: tokenToString],
+  offset: 79,
+  lineBreaks: 0,
+  line: 4,
+  col: 18
+}
+{
+  type: 'comma',
+  value: ',',
+  text: ',',
+  toString: [Function: tokenToString],
+  offset: 111,
+  lineBreaks: 0,
+  line: 4,
+  col: 50
+}
+{
+  type: 'whitespace',
+  value: '\n   ',
+  text: '\n   ',
+  toString: [Function: tokenToString],
+  offset: 112,
+  lineBreaks: 1,
+  line: 4,
+  col: 51
+}
+{
+  type: 'json5identifier',
+  value: 'lineBreaks',
+  text: 'lineBreaks',
+  toString: [Function: tokenToString],
+  offset: 116,
+  lineBreaks: 0,
+  line: 5,
+  col: 4
+}
+{
+  type: 'colon',
+  value: ':',
+  text: ':',
+  toString: [Function: tokenToString],
+  offset: 126,
+  lineBreaks: 0,
+  line: 5,
+  col: 14
+}
+{
+  type: 'whitespace',
+  value: ' ',
+  text: ' ',
+  toString: [Function: tokenToString],
+  offset: 127,
+  lineBreaks: 0,
+  line: 5,
+  col: 15
+}
+{
+  type: 'json5string',
+  value: `"Look, Mom! \\\n No \\\\n's!"`,
+  text: `"Look, Mom! \\\n No \\\\n's!"`,
+  toString: [Function: tokenToString],
+  offset: 128,
+  lineBreaks: 1,
+  line: 5,
+  col: 16
+}
+{
+  type: 'comma',
+  value: ',',
+  text: ',',
+  toString: [Function: tokenToString],
+  offset: 153,
+  lineBreaks: 0,
+  line: 6,
+  col: 12
+}
+{
+  type: 'whitespace',
+  value: '\n   ',
+  text: '\n   ',
+  toString: [Function: tokenToString],
+  offset: 154,
+  lineBreaks: 1,
+  line: 6,
+  col: 13
+}
+{
+  type: 'json5identifier',
+  value: 'hexadecimal',
+  text: 'hexadecimal',
+  toString: [Function: tokenToString],
+  offset: 158,
+  lineBreaks: 0,
+  line: 7,
+  col: 4
+}
+{
+  type: 'colon',
+  value: ':',
+  text: ':',
+  toString: [Function: tokenToString],
+  offset: 169,
+  lineBreaks: 0,
+  line: 7,
+  col: 15
+}
+{
+  type: 'whitespace',
+  value: ' ',
+  text: ' ',
+  toString: [Function: tokenToString],
+  offset: 170,
+  lineBreaks: 0,
+  line: 7,
+  col: 16
+}
+{
+  type: 'json5hexa',
+  value: '0xdecaf',
+  text: '0xdecaf',
+  toString: [Function: tokenToString],
+  offset: 171,
+  lineBreaks: 0,
+  line: 7,
+  col: 17
+}
+{
+  type: 'comma',
+  value: ',',
+  text: ',',
+  toString: [Function: tokenToString],
+  offset: 178,
+  lineBreaks: 0,
+  line: 7,
+  col: 24
+}
+{
+  type: 'whitespace',
+  value: '\n   ',
+  text: '\n   ',
+  toString: [Function: tokenToString],
+  offset: 179,
+  lineBreaks: 1,
+  line: 7,
+  col: 25
+}
+{
+  type: 'json5identifier',
+  value: 'leadingDecimalPoint',
+  text: 'leadingDecimalPoint',
+  toString: [Function: tokenToString],
+  offset: 183,
+  lineBreaks: 0,
+  line: 8,
+  col: 4
+}
+{
+  type: 'colon',
+  value: ':',
+  text: ':',
+  toString: [Function: tokenToString],
+  offset: 202,
+  lineBreaks: 0,
+  line: 8,
+  col: 23
+}
+{
+  type: 'whitespace',
+  value: ' ',
+  text: ' ',
+  toString: [Function: tokenToString],
+  offset: 203,
+  lineBreaks: 0,
+  line: 8,
+  col: 24
+}
