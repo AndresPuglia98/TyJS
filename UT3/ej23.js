@@ -14,6 +14,16 @@ const toEval = args[0];
 const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
 
 parser.feed(toEval);
+
+if(args.includes('-t')) {
+  parser.lexer.reset(toEval);
+  let token = parser.lexer.next();
+  while(token) {
+    console.log(token);
+    token = parser.lexer.next();
+  }
+}
+
 console.log(JSON.stringify(parser.finish()[0]));
 // interface.write(JSON.stringify(parser.finish()[0]));
 
