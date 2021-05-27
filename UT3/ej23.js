@@ -13,7 +13,6 @@ const toEval = args[0];
 // console.log(toEval);
 const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
 
-parser.feed(toEval);
 
 if(args.includes('-t')) {
   parser.lexer.reset(toEval);
@@ -23,6 +22,9 @@ if(args.includes('-t')) {
     token = parser.lexer.next();
   }
 }
+
+parser.lexer.reset()
+parser.feed(toEval);
 
 console.log(JSON.stringify(parser.finish()[0]));
 // interface.write(JSON.stringify(parser.finish()[0]));
