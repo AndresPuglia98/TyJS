@@ -31,6 +31,8 @@ const lexer = moo.compile({
   then: 'then',
   thenNot: 'else',
   func: ['abs', 'min', 'max', 'floor', 'sin', 'cos', 'log'],
+  lsqbracket: '[',
+  rsqbracket: ']',
 });
 
 const mathFunctions = new Map(
@@ -57,7 +59,7 @@ var grammar = {
     {"name": "bool", "symbols": [(lexer.has("true") ? {type: "true"} : true)], "postprocess": ([]) => true},
     {"name": "bool", "symbols": [(lexer.has("false") ? {type: "false"} : false)], "postprocess": ([]) => false},
     {"name": "bool", "symbols": [(lexer.has("not") ? {type: "not"} : not), "bool"], "postprocess": ([, bool]) => !bool},
-    {"name": "bool", "symbols": ["function"], "postprocess": ([function]) => function},
+    {"name": "bool", "symbols": ["fun"], "postprocess": ([fun]) => fun},
     {"name": "comparator", "symbols": ["expression", (lexer.has("equalTo") ? {type: "equalTo"} : equalTo), "expression"], "postprocess": ([fst, , snd]) => fst === snd},
     {"name": "comparator", "symbols": ["expression", (lexer.has("differs") ? {type: "differs"} : differs), "expression"], "postprocess": ([fst, , snd]) => fst !== snd},
     {"name": "comparator", "symbols": ["expression", (lexer.has("lessThan") ? {type: "lessThan"} : lessThan), "expression"], "postprocess": ([fst, , snd]) => fst < snd},
@@ -79,11 +81,11 @@ var grammar = {
     {"name": "factor$ebnf$2", "symbols": [(lexer.has("whitespace") ? {type: "whitespace"} : whitespace)], "postprocess": id},
     {"name": "factor$ebnf$2", "symbols": [], "postprocess": function(d) {return null;}},
     {"name": "factor", "symbols": [(lexer.has("lparen") ? {type: "lparen"} : lparen), "factor$ebnf$1", "conditional", "factor$ebnf$2", (lexer.has("rparen") ? {type: "rparen"} : rparen)], "postprocess": ([,, conditional,,]) => conditional},
-    {"name": "factor", "symbols": ["function"], "postprocess": ([function]) => function},
-    {"name": "function", "symbols": [(lexer.has("func") ? {type: "func"} : func), (lexer.has("lparen") ? {type: "lparen"} : lparen), (lexer.has("rparen") ? {type: "rparen"} : rparen)], "postprocess": ([function, , ]) => mathFunctions.get(function).apply(null)},
-    {"name": "function", "symbols": [(lexer.has("func") ? {type: "func"} : func), (lexer.has("lparen") ? {type: "lparen"} : lparen), "params", (lexer.has("rparen") ? {type: "rparen"} : rparen)], "postprocess": ([function, , params, ]) => mathFunctions.get(function).apply(null, params)},
+    {"name": "factor", "symbols": ["fun"], "postprocess": ([fun]) => fun},
+    {"name": "fun", "symbols": [(lexer.has("func") ? {type: "func"} : func), (lexer.has("lparen") ? {type: "lparen"} : lparen), (lexer.has("rparen") ? {type: "rparen"} : rparen)], "postprocess": ([fun, , ]) => mathFunctions.get(fun.value).apply(null)},
+    {"name": "fun", "symbols": [(lexer.has("func") ? {type: "func"} : func), (lexer.has("lparen") ? {type: "lparen"} : lparen), "params", (lexer.has("rparen") ? {type: "rparen"} : rparen)], "postprocess": ([fun, , params, ]) => mathFunctions.get(fun.value).apply(null, params)},
     {"name": "params", "symbols": ["m"], "postprocess": ([m]) => m},
-    {"name": "m", "symbols": ["m", (lexer.has("comma") ? {type: "comma"} : comma), "conditional"], "postprocess": ([m, , snd]) => m.push(snd)},
+    {"name": "m", "symbols": ["conditional", (lexer.has("comma") ? {type: "comma"} : comma), "m"], "postprocess": ([fst, , m]) => [fst].concat(m)},
     {"name": "m", "symbols": ["conditional"], "postprocess": ([fst]) => [fst]}
 ]
   , ParserStart: "conditional"

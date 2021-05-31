@@ -27,6 +27,8 @@ const lexer = moo.compile({
   then: 'then',
   thenNot: 'else',
   func: ['abs', 'min', 'max', 'floor', 'sin', 'cos', 'log'],
+  lsqbracket: '[',
+  rsqbracket: ']',
 });
 
 const mathFunctions = new Map(
@@ -54,7 +56,7 @@ bool -> %lparen %whitespace:? conditional %whitespace:? %rparen {% ([,, conditio
 bool -> %true {% ([]) => true %}
 bool -> %false {% ([]) => false %}
 bool -> %not bool {% ([, bool]) => !bool %}
-bool -> function {% ([function]) => function %}
+bool -> fun {% ([fun]) => fun %}
 
 comparator -> expression %equalTo expression {% ([fst, , snd]) => fst === snd %}
 comparator -> expression %differs expression {% ([fst, , snd]) => fst !== snd %}
@@ -76,11 +78,11 @@ term -> factor {% ([factor]) => factor %}
 
 factor -> %number {% ([number]) => +number %}
 factor -> %lparen %whitespace:? conditional %whitespace:? %rparen {% ([,, conditional,,]) => conditional %}
-factor -> function {% ([function]) => function %}
+factor -> fun {% ([fun]) => fun %}
 
-function -> %func %lparen %rparen {% ([function, , ]) => mathFunctions.get(function).apply(null) %}
-function -> %func %lparen params %rparen {% ([function, , params, ]) => mathFunctions.get(function).apply(null, params) %}
+fun -> %func %lparen %rparen {% ([fun, , ]) => mathFunctions.get(fun.value).apply(null) %}
+fun -> %func %lparen params %rparen {% ([fun, , params, ]) => mathFunctions.get(fun.value).apply(null, params) %}
 
 params -> m {% ([m]) => m %}
-m -> m %comma conditional {% ([m, , snd]) => m.push(snd) %}
+m -> conditional %comma m {% ([fst, , m]) => [fst].concat(m) %}
 m -> conditional {% ([fst]) => [fst] %}
