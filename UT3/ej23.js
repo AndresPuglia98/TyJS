@@ -2,47 +2,56 @@ const nearley = require('nearley');
 const grammar = require('./grammar.js');
 const readline = require('readline');
 
-//const args = process.argv.slice(2);
+const argv = require('minimist')(process.argv.slice(2));
 
 const interface = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
 });
 
-// const toEval = args[0];
-// console.log(toEval);
-const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
+const tokens = argv.t;
+const cli = argv.e;
+
+let parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
+
+if (cli) {
+  if (tokens){
+    parser.lexer.reset(cli);
+    let token = parser.lexer.next();
+    while(token) {
+      console.log(token);
+      token = parser.lexer.next();
+    }
+  } else {
+    parser.feed(cli);
+    console.log(JSON.stringify(parser.finish()[0]));
+  }
+  process.exit();
+}
+
+let tokenLine = false;
 
 const waitForUserInput = () => {
-  interface.question("Command: ", function(answer) {
-    if (answer == "exit"){
-      interface.close();
+  interface.question('', function(answer) {
+    if (answer.startsWith(':t')) {
+      answer = answer.slice(2);
+      tokenLine = true;
+    }
+    if (tokens || tokenLine){
+      parser.lexer.reset(answer);
+      let token = parser.lexer.next();
+      while(token) {
+        console.log(token);
+        token = parser.lexer.next();
+      }
     } else {
+      parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
       parser.feed(answer);
       console.log(JSON.stringify(parser.finish()[0]));
-      //parser.lexer.reset()
-      waitForUserInput();
     }
+    tokenLine = false;
+    waitForUserInput();
   });
 }
 
 waitForUserInput();
-/* 
-
-if(args.includes('-t')) {
-  parser.lexer.reset(toEval);
-  let token = parser.lexer.next();
-  while(token) {
-    console.log(token);
-    token = parser.lexer.next();
-  }
-}
-
-parser.lexer.reset()
-parser.feed(toEval);
-
-console.log(JSON.stringify(parser.finish()[0]));
-// interface.write(JSON.stringify(parser.finish()[0]));
-
-process.exit();
- */
