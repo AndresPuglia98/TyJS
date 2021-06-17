@@ -44,7 +44,13 @@ class Type {
     return checks(this.parsedType.type, value);
   }
 
-  demand() {}
+  demand(value) {
+    if (this.checks(value)) {
+      return value;
+    } else {
+      throw new TypeError();
+    }
+  }
 
   classChecker() {}
 }

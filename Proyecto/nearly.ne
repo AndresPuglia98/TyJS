@@ -12,6 +12,7 @@ const lexer = moo.compile({
   not: '!',
   and: '&',
   or: '|',
+  minus: '-',
   lcurlBracket: '{',
   rcurlBracket: '}',
   lsqBracket: '[',
@@ -36,6 +37,14 @@ const lexer = moo.compile({
 %}
 
 @lexer lexer
+
+type -> %not type
+type -> type %and type {% ([t1,,t2]) =>  %}
+type -> type %or type
+type -> type %and type
+type -> type %minus type
+
+type -> %lsqBracket params %rsqBracket
 
 type -> %typeUndefined {% ([value]) => typeObjects.typeUndefined %}
 type -> %typeBoolean {% ([value]) => typeObjects.typeBoolean %}
