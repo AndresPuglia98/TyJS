@@ -1,9 +1,26 @@
-import nearley from 'nearley';
-import grammar from './grammar';
+const nearley = require('nearley');
+const grammar = require('./grammar.js');
 
 // Call recursive
-const checks = (type, value) => {
-  switch(type) {
+const checks = (typeObject, checkFunctions, value) => {
+  if (typeof typeObject !== 'object') {
+    return typeObject === value;
+  }
+  switch (typeObject.type) {
+    case 'not':
+      return !checks(typeObject.right, value);
+    case 'and':
+      return checks(typeObject.left, value) && checks(typeObject.right, value);
+    case 'or':
+      return checks(typeObject.left, value) || checks(typeObject.right, value);
+    case 'minus':
+      return checks(typeObject.left, value) && !checks(typeObject.right, value);
+    case 'in':
+      return typeObject.values.includes(value);
+    case 'regex':
+      return typeObject.regex.test(value);
+    case 'checkFun':
+      return checkFunctions[typeObject.index].apply(null, [value]);
     case 'undefined':
     case 'boolean':
     case 'number':
@@ -12,7 +29,7 @@ const checks = (type, value) => {
     case 'object':
     case 'symbol':
     case 'bigint':
-      return type === typeof value;
+      return typeObject.type === typeof value;
     case 'void':
       return (typeof value) === 'null' || (typeof value) === 'undefined';
     case 'int':
@@ -38,19 +55,28 @@ class Type {
     const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
     parser.feed(type);
     this.parsedType = parser.finish()[0];
+    this.checkFunctions = checkFunctions;
   }
 
   checks(value) {
-    return checks(this.parsedType.type, value);
+    return checks(this.parsedType, this.checkFunctions, value);
   }
 
   demand(value) {
     if (this.checks(value)) {
       return value;
     } else {
-      throw new TypeError();
+      throw new TypeError('El valor no encaja con este tipo');
     }
   }
 
-  classChecker() {}
+  classChecker() { }
 }
+
+module.exports = Type;
+
+/* Type.classChecker(Set, (setValue, checkers) => {
+  const [elemType] = checkers;
+  return checkers.length === 1 && [...setValue].all((elem) => elemType(elem));
+}); */
+

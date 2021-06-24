@@ -1,56 +1,118 @@
 // Singleton? undefined y null
-export const typeUndefined = {
+const typeUndefined = {
   type: 'undefined',
 };
 
-export const typeBoolean = {
+const typeBoolean = {
   type: 'boolean',
 };
 
-export const typeNumber = {
+const typeNumber = {
   type: 'number',
 };
 
-export const typeString = {
+const typeString = {
   type: 'string',
 };
 
-export const typeFunction = {
+const typeFunction = {
   type: 'function',
 };
 
-export const typeObject = {
+const typeObject = {
   type: 'object',
 };
 
-export const typeSymbol = {
+const typeSymbol = {
   type: 'symbol',
 };
 
-export const typeBigInt = {
+const typeBigInt = {
   type: 'bigint',
 };
 
-export const typeVoid = {
+const typeVoid = {
   type: 'void',
 };
 
-export const typeInt = {
+const typeInt = {
   type: 'int',
 };
 
-export const typeDouble = {
+const typeDouble = {
   type: 'double',
 };
 
-export const typeChar = {
+const typeChar = {
   type: 'char',
 };
 
-export const typeByte = {
+const typeByte = {
   type: 'byte',
 };
 
-export const typeAny = {
+const typeAny = {
   type: 'any',
+};
+
+const typeNot = (right) => ({
+  type: 'not',
+  right,
+});
+
+const typeAnd = (left, right) => ({
+  type: 'and',
+  left,
+  right,
+});
+
+const typeOr = (left, right) => ({
+  type: 'or',
+  left,
+  right,
+});
+
+const typeMinus = (left, right) => ({
+  type: 'minus',
+  left,
+  right,
+});
+
+const typeIn = (values) => ({
+  type: 'in',
+  values,
+});
+
+const typeRegex = (regex) => ({
+  type: 'regex',
+  regex,
+});
+
+const typeCheckFun = (index) => ({
+  type: 'checkFun',
+  index,
+});
+
+module.exports = {
+  typeUndefined,
+  typeBoolean,
+  typeNumber,
+  typeString,
+  typeFunction,
+  typeObject,
+  typeSymbol,
+  typeBigInt,
+  typeVoid,
+  typeInt,
+  typeDouble,
+  typeChar,
+  typeByte,
+  typeAny,
+  typeNot,
+  typeAnd,
+  typeOr,
+  typeMinus,
+  typeIn,
+  typeRegex,
+  typeCheckFun
 };
