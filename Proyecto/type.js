@@ -8,13 +8,13 @@ const checks = (typeObject, checkFunctions, value) => {
   }
   switch (typeObject.type) {
     case 'not':
-      return !checks(typeObject.right, value);
+      return !checks(typeObject.right, checkFunctions, value);
     case 'and':
-      return checks(typeObject.left, value) && checks(typeObject.right, value);
+      return checks(typeObject.left, checkFunctions, value) && checks(typeObject.right, checkFunctions, value);
     case 'or':
-      return checks(typeObject.left, value) || checks(typeObject.right, value);
+      return checks(typeObject.left, checkFunctions, value) || checks(typeObject.right, checkFunctions, value);
     case 'minus':
-      return checks(typeObject.left, value) && !checks(typeObject.right, value);
+      return checks(typeObject.left, checkFunctions, value) && !checks(typeObject.right, checkFunctions, value);
     case 'in':
       return typeObject.values.includes(value);
     case 'regex':

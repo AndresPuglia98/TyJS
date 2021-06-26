@@ -150,7 +150,9 @@ var grammar = {
     {"name": "fun$ebnf$2", "symbols": [], "postprocess": function(d) {return null;}},
     {"name": "fun$ebnf$3", "symbols": [(lexer.has("whitespace") ? {type: "whitespace"} : whitespace)], "postprocess": id},
     {"name": "fun$ebnf$3", "symbols": [], "postprocess": function(d) {return null;}},
-    {"name": "fun", "symbols": [(lexer.has("func") ? {type: "func"} : func), (lexer.has("lparen") ? {type: "lparen"} : lparen), "fun$ebnf$2", "params", "fun$ebnf$3", (lexer.has("rparen") ? {type: "rparen"} : rparen)], "postprocess": ([fun,,,params,,]) => mathFunctions.get(fun.value).apply(null, params)},
+    {"name": "fun", "symbols": [(lexer.has("func") ? {type: "func"} : func), (lexer.has("lparen") ? {type: "lparen"} : lparen), "fun$ebnf$2", "params", "fun$ebnf$3", (lexer.has("rparen") ? {type: "rparen"} : rparen)], "postprocess":  ([fun,,,params,,]) => {
+        console.log(params)
+        mathFunctions.get(fun.value).apply(null, params)} },
     {"name": "params", "symbols": ["m"], "postprocess": ([m]) => m},
     {"name": "m$ebnf$1", "symbols": [(lexer.has("whitespace") ? {type: "whitespace"} : whitespace)], "postprocess": id},
     {"name": "m$ebnf$1", "symbols": [], "postprocess": function(d) {return null;}},

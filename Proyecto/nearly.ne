@@ -14,8 +14,8 @@ const lexer = moo.compile({
   rcurlBracket: '}',
   lsqBracket: '[',
   rsqBracket: ']',
-  checkfuns: /\$\d+$/u,
-  _in: 'in',
+  checkfuns: /\$\d+/,
+  inValues: 'in',
   typeUndefined: 'undefined',
   typeBoolean: 'boolean',
   typeNumber: 'number',
@@ -31,14 +31,15 @@ const lexer = moo.compile({
   typeByte: 'byte',
   typeAny: 'any',
   whitespace: { 
-    match: /(?: |(?:\n)|(?:\r)|(?:\t))+/u, 
+    match: /(?: |(?:\n)|(?:\r)|(?:\t))+/, 
     lineBreaks: true 
   },
-  number: /(?:\d+)(?:(?:\.\d+))?(?:[Ee](?:[\+\-])?(?:\d+))?|Infinity|-Infinity|NaN/u,
-  regex: /\/(?:[^\r\n\\\/]|\\[^\r\n])+\/[isu]*/u,
+  number: /(?:\d+)(?:(?:\.\d+))?(?:[Ee](?:[\+-])?(?:\d+))?|Infinity|-Infinity|NaN/,
+  regex: /\/(?:[^\r\n\\\/]|\\[^\r\n])+\/[isu]*/,
   string: {
-    match: /(?:"(?:.|\\\n)*?")/u,
+    match: /(?:"(?:.|\n)*?")/,
     lineBreaks: true,
+    value: x => x.slice(1, -1),
   },
 });
 
@@ -48,8 +49,8 @@ const lexer = moo.compile({
 
 type -> %not type {% ([,t1]) => typeObjects.typeNot(t1) %}
 type -> type __ %and __ type {% ([t1,,,,t2]) => typeObjects.typeAnd(t1, t2) %}
-type -> type __ %or __ type {% ([t1,,,,t2]) => typeObjects.typeAnd(t1, t2) %}
-type -> type __ %minus __ type {% ([t1,,,,t2]) => typeObjects.typeAnd(t1, t2) %}
+type -> type __ %or __ type {% ([t1,,,,t2]) => typeObjects.typeOr(t1, t2) %}
+type -> type __ %minus __ type {% ([t1,,,,t2]) => typeObjects.typeMinus(t1, t2) %}
 
 type -> %typeUndefined {% ([value]) => typeObjects.typeUndefined %}
 type -> %typeBoolean {% ([value]) => typeObjects.typeBoolean %}
@@ -66,16 +67,16 @@ type -> %typeChar {% ([value]) => typeObjects.typeChar %}
 type -> %typeByte {% ([value]) => typeObjects.typeByte %}
 type -> %typeAny {% ([value]) => typeObjects.typeAny %}
 type -> %regex {% ([value]) => typeObjects.typeRegex(new RegExp(value)) %}
-type -> %checkfuns {% ([value]) => typeObjects.typeCheckFun(+(value.slice(1))) %}
+type -> %checkfuns {% ([value]) => typeObjects.typeCheckFun(+(value.value.slice(1))) %}
 
 type -> valueType {% ([valueType]) => valueType %}
 
-valueType -> %true {% id %}
-valueType -> %false {% id %}
-valueType -> %number {% id %}
-valueType -> %string {% id %}
+valueType -> %true {% ([value]) => !!value %}
+valueType -> %false {% ([value]) => !!value %}
+valueType -> %number {% ([value]) => +value %}
+valueType -> %string {% ([value]) => value.value %}
 
-type -> %_in __ %lsqBracket params %rsqBracket {% ([,,,params,]) => typeObjects.typeIn(params) %}
+type -> %inValues __ %lsqBracket params %rsqBracket {% ([,,,params,]) => typeObjects.typeIn(params) %}
 params -> m {% ([m]) => m %}
 m -> valueType _ %comma _ m {% ([fst,,,,m]) => [fst].concat(m) %}
 m -> valueType {% ([fst]) => [fst] %}

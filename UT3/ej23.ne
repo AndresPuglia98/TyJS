@@ -80,7 +80,9 @@ factor -> %lparen %whitespace:? conditional %whitespace:? %rparen {% ([,,conditi
 factor -> fun {% ([fun]) => fun %}
 
 fun -> %func %lparen %whitespace:? %rparen {% ([fun,,,]) => mathFunctions.get(fun.value).apply(null) %}
-fun -> %func %lparen %whitespace:? params %whitespace:? %rparen {% ([fun,,,params,,]) => mathFunctions.get(fun.value).apply(null, params) %}
+fun -> %func %lparen %whitespace:? params %whitespace:? %rparen {% ([fun,,,params,,]) => {
+  console.log(params)
+  mathFunctions.get(fun.value).apply(null, params)} %}
 
 params -> m {% ([m]) => m %}
 m -> conditional %whitespace:? %comma %whitespace:? m {% ([fst,,,,m]) => [fst].concat(m) %}
