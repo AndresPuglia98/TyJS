@@ -33,10 +33,10 @@ const checks = (typeObject, checkFunctions, value) => {
     case 'void':
       return (typeof value) === 'null' || (typeof value) === 'undefined';
     case 'int':
-      const reI = new RegExp(/(?:\d+)(?:[Ee](?:[\+\-])?(?:\d+))?/);
+      const reI = new RegExp(/^(?:\d+)(?:[Ee](?:[\+\-])?(?:\d+))?$/);
       return (typeof value) === 'number' && reI.test(value.toString());
     case 'double':
-      const reD = new RegExp(/((?:\d+)(?:(?:\.\d+))(?:[Ee](?:[\+\-])?(?:\d+))?)|"NaN"|Infinity|-Infinity/);
+      const reD = new RegExp(/^((?:\d+)(?:(?:\.\d+))(?:[Ee](?:[\+\-])?(?:\d+))?)$|NaN|Infinity|-Infinity/);
       return (typeof value) === 'number' && reD.test(value.toString());
     case 'char':
       return (typeof value) === 'string' && value.length === 1;

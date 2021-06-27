@@ -93,6 +93,11 @@ const typeCheckFun = (index) => ({
   index,
 });
 
+const typeIterable = (types) => ({
+  type: 'iterable',
+  types,
+});
+
 module.exports = {
   typeUndefined,
   typeBoolean,
@@ -114,5 +119,6 @@ module.exports = {
   typeMinus,
   typeIn,
   typeRegex,
-  typeCheckFun
+  typeCheckFun,
+  typeIterable
 };

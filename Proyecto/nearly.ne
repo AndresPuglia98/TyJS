@@ -14,8 +14,9 @@ const lexer = moo.compile({
   rcurlBracket: '}',
   lsqBracket: '[',
   rsqBracket: ']',
+  times: '*',
+  dots: '...',
   checkfuns: /\$\d+/,
-  inValues: 'in',
   typeUndefined: 'undefined',
   typeBoolean: 'boolean',
   typeNumber: 'number',
@@ -30,6 +31,7 @@ const lexer = moo.compile({
   typeChar: 'char',
   typeByte: 'byte',
   typeAny: 'any',
+  inValues: 'in',
   whitespace: { 
     match: /(?: |(?:\n)|(?:\r)|(?:\t))+/, 
     lineBreaks: true 
@@ -71,8 +73,8 @@ type -> %checkfuns {% ([value]) => typeObjects.typeCheckFun(+(value.value.slice(
 
 type -> valueType {% ([valueType]) => valueType %}
 
-valueType -> %true {% ([value]) => !!value %}
-valueType -> %false {% ([value]) => !!value %}
+valueType -> %true {% ([value]) => true %}
+valueType -> %false {% ([value]) => false %}
 valueType -> %number {% ([value]) => +value %}
 valueType -> %string {% ([value]) => value.value %}
 
@@ -80,6 +82,16 @@ type -> %inValues __ %lsqBracket params %rsqBracket {% ([,,,params,]) => typeObj
 params -> m {% ([m]) => m %}
 m -> valueType _ %comma _ m {% ([fst,,,,m]) => [fst].concat(m) %}
 m -> valueType {% ([fst]) => [fst] %}
+
+type -> %lsqBracket itParams %rsqBracket {% ([,params,]) => typeObjects.typeIterable(params) %}
+itParams -> p {% ([p]) => p %}
+p -> itType _ %comma _ p {% ([fst,,,,m]) => fst.concat(m) %}
+p -> itType {% ([fst]) => fst %}
+
+itType -> type {% ([type]) => [type] %}
+itType -> %dots {% ([type]) => [typeObjects.typeAny] %}
+itType -> %dots type {%  %}
+itType -> %dots /^\d+$/ _ %times _ type {%  %}
 
 
 

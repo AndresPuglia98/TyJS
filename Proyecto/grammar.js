@@ -19,7 +19,6 @@ const lexer = moo.compile({
   lsqBracket: '[',
   rsqBracket: ']',
   checkfuns: /\$\d+/,
-  inValues: 'in',
   typeUndefined: 'undefined',
   typeBoolean: 'boolean',
   typeNumber: 'number',
@@ -34,6 +33,7 @@ const lexer = moo.compile({
   typeChar: 'char',
   typeByte: 'byte',
   typeAny: 'any',
+  inValues: 'in',
   whitespace: { 
     match: /(?: |(?:\n)|(?:\r)|(?:\t))+/, 
     lineBreaks: true 
@@ -71,8 +71,8 @@ var grammar = {
     {"name": "type", "symbols": [(lexer.has("regex") ? {type: "regex"} : regex)], "postprocess": ([value]) => typeObjects.typeRegex(new RegExp(value))},
     {"name": "type", "symbols": [(lexer.has("checkfuns") ? {type: "checkfuns"} : checkfuns)], "postprocess": ([value]) => typeObjects.typeCheckFun(+(value.value.slice(1)))},
     {"name": "type", "symbols": ["valueType"], "postprocess": ([valueType]) => valueType},
-    {"name": "valueType", "symbols": [(lexer.has("true") ? {type: "true"} : true)], "postprocess": ([value]) => !!value},
-    {"name": "valueType", "symbols": [(lexer.has("false") ? {type: "false"} : false)], "postprocess": ([value]) => !!value},
+    {"name": "valueType", "symbols": [(lexer.has("true") ? {type: "true"} : true)], "postprocess": ([value]) => true},
+    {"name": "valueType", "symbols": [(lexer.has("false") ? {type: "false"} : false)], "postprocess": ([value]) => false},
     {"name": "valueType", "symbols": [(lexer.has("number") ? {type: "number"} : number)], "postprocess": ([value]) => +value},
     {"name": "valueType", "symbols": [(lexer.has("string") ? {type: "string"} : string)], "postprocess": ([value]) => value.value},
     {"name": "type", "symbols": [(lexer.has("inValues") ? {type: "inValues"} : inValues), "__", (lexer.has("lsqBracket") ? {type: "lsqBracket"} : lsqBracket), "params", (lexer.has("rsqBracket") ? {type: "rsqBracket"} : rsqBracket)], "postprocess": ([,,,params,]) => typeObjects.typeIn(params)},
