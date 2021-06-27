@@ -98,6 +98,16 @@ const typeIterable = (types) => ({
   types,
 });
 
+const typeSingleItElement = (value) => ({
+  type: 'single',
+  value,
+});
+
+const typeDotsItElement = (value) => ({
+  type: 'dots',
+  value,
+});
+
 module.exports = {
   typeUndefined,
   typeBoolean,
@@ -120,5 +130,7 @@ module.exports = {
   typeIn,
   typeRegex,
   typeCheckFun,
-  typeIterable
+  typeIterable,
+  typeSingleItElement,
+  typeDotsItElement
 };

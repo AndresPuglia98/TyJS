@@ -55,3 +55,14 @@ const waitForUserInput = () => {
 }
 
 waitForUserInput();
+
+
+type -> %lsqBracket itParams %rsqBracket {% ([,params,]) => typeObjects.typeIterable(params) %}
+itParams -> p {% ([p]) => p %}
+p -> itType _ %comma _ p {% ([fst,,,,m]) => fst.concat(m) %}
+p -> itType {% ([fst]) => fst %}
+
+itType -> type {% ([type]) => [type] %}
+itType -> %dots {% ([type]) => [typeObjects.typeAny] %}
+itType -> %dots type {%  %}
+itType -> %dots /^\d+$/ _ %times _ type {%  %}

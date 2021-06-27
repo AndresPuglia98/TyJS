@@ -32,12 +32,16 @@ const lexer = moo.compile({
   typeByte: 'byte',
   typeAny: 'any',
   inValues: 'in',
+  positiveInt: /^\d+$/,
   whitespace: { 
     match: /(?: |(?:\n)|(?:\r)|(?:\t))+/, 
     lineBreaks: true 
   },
   number: /(?:\d+)(?:(?:\.\d+))?(?:[Ee](?:[\+-])?(?:\d+))?|Infinity|-Infinity|NaN/,
-  regex: /\/(?:[^\r\n\\\/]|\\[^\r\n])+\/[isu]*/,
+  regex: {
+    match: /\/(?:[^\r\n\\\/]|\\[^\r\n])+\/[isu]*/,
+    value: x => x.slice(1, -1),
+  },
   string: {
     match: /(?:"(?:.|\n)*?")/,
     lineBreaks: true,
@@ -88,10 +92,10 @@ itParams -> p {% ([p]) => p %}
 p -> itType _ %comma _ p {% ([fst,,,,m]) => fst.concat(m) %}
 p -> itType {% ([fst]) => fst %}
 
-itType -> type {% ([type]) => [type] %}
-itType -> %dots {% ([type]) => [typeObjects.typeAny] %}
-itType -> %dots type {%  %}
-itType -> %dots /^\d+$/ _ %times _ type {%  %}
+itType -> type {% ([type]) => [typeObjects.typeSingleItElement(type)] %}
+itType -> %dots {% ([type]) => [typeObjects.typeDotsItElement(typeObjects.typeAny)] %}
+itType -> %dots type {% ([,type]) => [typeObjects.typeDotsItElement(type)] %}
+itType -> %dots %positiveInt _ %times _ type {% ([,n,,,,type]) => Array(n).fill(typeObjects.typeSingleItElement(type)) %}
 
 
 

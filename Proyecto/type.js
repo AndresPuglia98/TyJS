@@ -21,6 +21,12 @@ const checks = (typeObject, checkFunctions, value) => {
       return typeObject.regex.test(value);
     case 'checkFun':
       return checkFunctions[typeObject.index].apply(null, [value]);
+    case 'iterable':
+      return (typeof value[Symbol.iterator] === 'function') && typeObject.types.every((type, index) => checks(type, checkFunctions, value[index]));
+    case 'single':
+      return checks(typeObject.value, checkFunctions, value);
+    case 'dots':
+      return true;
     case 'undefined':
     case 'boolean':
     case 'number':

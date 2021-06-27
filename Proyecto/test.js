@@ -27,7 +27,7 @@ console.log(tipo3.checks('abc'));
 console.log(tipo3.checks(3456));
 console.log(tipo3.checks(45));
 
-const tipo4 = new Type('number & /^\d{3}/');
+const tipo4 = new Type('number & /^\\d{3}$/'); // preguntar esto
 console.log(tipo4);
 console.log(tipo4.checks('345'));
 console.log(tipo4.checks(345));
@@ -48,3 +48,11 @@ console.log(tipo6.checks(NaN));
 console.log(tipo6.checks(Infinity));
 console.log(tipo6.checks(3e-6));
 
+const tipo7 = new Type('[double, string, ...int]');
+console.log(tipo7);
+console.log(tipo7.parsedType.types);
+console.log(tipo7.checks('34.5'));
+console.log(tipo7.checks(34.5));
+console.log(tipo7.checks([3.14, "abc"]));
+console.log(tipo7.checks([3.14, "abc", 2, 3]));
+console.log(tipo7.checks([3.14, "abc", 3.14]));
