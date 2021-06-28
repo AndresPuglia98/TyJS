@@ -21,8 +21,35 @@ const checks = (typeObject, checkFunctions, value) => {
     case 'checkFun':
       return checkFunctions[typeObject.index].apply(null, [value]);
     case 'iterable':
+      let valueIterator;
+      if (value instanceof Set) {
+        valueIterator = value.values();
+      } else if (value instanceof Map) {
+        valueIterator = value.entries();
+      }
       if (typeof value[Symbol.iterator] !== 'function') return false;
-      let typeIndex = 0;
+      valueIterator = value[Symbol.iterator]();
+
+      let currentItem = valueIterator.next();
+      for (itType of typeObject.types) {
+        switch (itType.type) {
+          case 'dots':
+            if (currentItem.done) break;
+            while (checks(itType.value, checkFunctions, currentItem.value)) {
+              currentItem = valueIterator.next();
+              if (currentItem.done) break;
+            }
+            break;
+          case 'single':
+            if (currentItem.done) return false;
+            if (!checks(itType.value, checkFunctions, currentItem.value)) return false;
+            currentItem = valueIterator.next();
+            break;
+        }
+      }
+      return currentItem.done;
+
+ /*      let typeIndex = 0;
       for (item of value) {
         let currentType = typeObject.types[typeIndex];
         let toNextItem = false;
@@ -42,7 +69,7 @@ const checks = (typeObject, checkFunctions, value) => {
           return false;
         }   
       }
-      return (typeIndex == typeObject.types.length);
+      return (typeIndex == typeObject.types.length) || typeObject.types.slice(typeIndex).every((type) => type.type === 'dots'); */
     case 'undefined':
     case 'boolean':
     case 'number':
