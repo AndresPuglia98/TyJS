@@ -31,7 +31,7 @@ const checks = (typeObject, checkFunctions, value) => {
       valueIterator = value[Symbol.iterator]();
 
       let currentItem = valueIterator.next();
-      for (itType of typeObject.types) {
+      for (const itType of typeObject.types) {
         switch (itType.type) {
           case 'dots':
             if (currentItem.done) break;

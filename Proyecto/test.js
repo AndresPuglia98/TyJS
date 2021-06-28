@@ -90,7 +90,7 @@ console.log(tipo11.checks([true]) === true);
 console.log(tipo11.checks([]) === false); */
 
 const tipo12 = new Type('[...[number, string]]');
-console.log(tipo12);
+console.dir(tipo12, { depth: null })
 console.log(tipo12.checks([[1, 'a']]) === true);
 const m1 = new Map();
 m1.set(1, 'b');
