@@ -50,9 +50,39 @@ console.log(tipo6.checks(3e-6));
 
 const tipo7 = new Type('[double, string, ...int]');
 console.log(tipo7);
-console.log(tipo7.parsedType.types);
 console.log(tipo7.checks('34.5'));
 console.log(tipo7.checks(34.5));
 console.log(tipo7.checks([3.14, "abc"]));
 console.log(tipo7.checks([3.14, "abc", 2, 3]));
 console.log(tipo7.checks([3.14, "abc", 3.14]));
+
+const tipo8 = new Type('[...number]');
+console.log(tipo8);
+console.log(tipo8.checks('34.5'));
+console.log(tipo8.checks(34.5));
+console.log(tipo8.checks([3.14, "abc"]));
+console.log(tipo8.checks([3.14, 2, 3]));
+console.log(tipo8.checks(["abc"]));
+console.log(tipo8.checks([]));
+
+const tipo9 = new Type('[...]');
+console.log(tipo9);
+console.log(tipo9.checks('34.5')); // esta bien esto?
+console.log(tipo9.checks(34.5));
+console.log(tipo9.checks([3.14, "abc"]));
+console.log(tipo9.checks([3.14, 2, 3]));
+console.log(tipo9.checks(["abc"]));
+console.log(tipo9.checks([]));
+
+const tipo10 = new Type('[boolean, ...number]');
+console.log(tipo10);
+console.log(tipo10.checks(34.5));
+console.log(tipo10.checks([3.14]));
+console.log(tipo10.checks([true]));
+console.log(tipo10.checks(['true']));
+console.log(tipo10.checks([]));
+
+/* const tipo11 = new Type('[boolean, ...boolean]');
+console.log(tipo11);
+console.log(tipo11.checks([true]));
+console.log(tipo11.checks([])); */

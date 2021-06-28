@@ -1,7 +1,6 @@
 const nearley = require('nearley');
 const grammar = require('./grammar.js');
 
-// Call recursive
 const checks = (typeObject, checkFunctions, value) => {
   if (typeof typeObject !== 'object') {
     return typeObject === value;
@@ -22,11 +21,28 @@ const checks = (typeObject, checkFunctions, value) => {
     case 'checkFun':
       return checkFunctions[typeObject.index].apply(null, [value]);
     case 'iterable':
-      return (typeof value[Symbol.iterator] === 'function') && typeObject.types.every((type, index) => checks(type, checkFunctions, value[index]));
-    case 'single':
-      return checks(typeObject.value, checkFunctions, value);
-    case 'dots':
-      return true;
+      if (typeof value[Symbol.iterator] !== 'function') return false;
+      let typeIndex = 0;
+      for (item of value) {
+        let currentType = typeObject.types[typeIndex];
+        let toNextItem = false;
+        while (currentType && currentType.type === 'dots') {
+          if (checks(currentType.value, checkFunctions, item)) {
+            toNextItem = true;
+            break;
+          } else {
+            typeIndex++;
+            currentType = typeObject.types[typeIndex];
+          }
+        }
+        if (toNextItem) continue;
+        if (currentType && checks(currentType.value, checkFunctions, item)) {
+          typeIndex++;
+        } else {
+          return false;
+        }   
+      }
+      return (typeIndex == typeObject.types.length);
     case 'undefined':
     case 'boolean':
     case 'number':
