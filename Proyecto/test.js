@@ -96,3 +96,10 @@ const m1 = new Map();
 m1.set(1, 'b');
 m1.set(2, 'c');
 console.log(tipo12.checks(m1) === true);
+
+const tipo13 = new Type('[...3 * number]');
+console.dir(tipo13, { depth: null })
+console.log(tipo13.checks([1, 'a', 2]) === false);
+console.log(tipo13.checks([1, 4, 2]) === true);
+console.log(tipo13.checks([1, 4, 2, 6]) === false);
+console.log(tipo13.checks([1, 4]) === false);

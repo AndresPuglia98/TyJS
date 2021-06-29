@@ -92,10 +92,11 @@ itParams -> p {% ([p]) => p %}
 p -> itType _ %comma _ p {% ([fst,,,,m]) => fst.concat(m) %}
 p -> itType {% ([fst]) => fst %}
 
-itType -> type {% ([type]) => [typeObjects.typeSingleItElement(type)] %}
 itType -> %dots {% ([type]) => [typeObjects.typeDotsItElement(typeObjects.typeAny)] %}
-itType -> %dots type {% ([,type]) => [typeObjects.typeDotsItElement(type)] %}
 itType -> %dots %positiveInt _ %times _ type {% ([,n,,,,type]) => Array(n).fill(typeObjects.typeSingleItElement(type)) %}
+itType -> %dots type {% ([,type]) => [typeObjects.typeDotsItElement(type)] %}
+itType -> type {% ([type]) => [typeObjects.typeSingleItElement(type)] %}
+
 
 
 
