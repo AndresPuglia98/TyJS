@@ -24,11 +24,11 @@ const checks = (typeObject, checkFunctions, value) => {
       let valueIterator;
       if (value instanceof Set) {
         valueIterator = value.values();
-      } else if (value instanceof Map) {
-        valueIterator = value.entries();
+      } else if (typeof value[Symbol.iterator] === 'function') {
+        valueIterator = value[Symbol.iterator]();
+      } else {
+        return false;
       }
-      if (typeof value[Symbol.iterator] !== 'function') return false;
-      valueIterator = value[Symbol.iterator]();
 
       let currentItem = valueIterator.next();
       for (const itType of typeObject.types) {
@@ -48,28 +48,32 @@ const checks = (typeObject, checkFunctions, value) => {
         }
       }
       return currentItem.done;
+    case 'obj':
+      if (typeof value !== 'object') return false;
+      let objValueIterator = Object.entries(value)[Symbol.iterator]();
 
- /*      let typeIndex = 0;
-      for (item of value) {
-        let currentType = typeObject.types[typeIndex];
-        let toNextItem = false;
-        while (currentType && currentType.type === 'dots') {
-          if (checks(currentType.value, checkFunctions, item)) {
-            toNextItem = true;
+      let currentProp = objValueIterator.next();
+      for (const prop of typeObject.props) {
+        switch (prop.type) {
+          case 'dots':
+            if (currentProp.done) break;
+            while (checks(prop.value, checkFunctions, currentProp.value)) {
+              currentProp = valueIterator.next();
+              if (currentProp.done) break;
+            }
             break;
-          } else {
-            typeIndex++;
-            currentType = typeObject.types[typeIndex];
-          }
+          case 'single':
+            if (currentProp.done) return false;
+            if (!checks(prop.value, checkFunctions, currentProp.value)) return false;
+            currentProp = valueIterator.next();
+            break;
         }
-        if (toNextItem) continue;
-        if (currentType && checks(currentType.value, checkFunctions, item)) {
-          typeIndex++;
-        } else {
-          return false;
-        }   
       }
-      return (typeIndex == typeObject.types.length) || typeObject.types.slice(typeIndex).every((type) => type.type === 'dots'); */
+      return currentItem.done;
+    case 'nameprop':
+      return typeObject.propName === value[0] && checks(typeObject.value, checkFunctions, value[1]);
+    case 'regexprop':
+      return typeObject.propRegex.test(value[0]) && checks(typeObject.value, checkFunctions, value[1]);
     case 'undefined':
     case 'boolean':
     case 'number':

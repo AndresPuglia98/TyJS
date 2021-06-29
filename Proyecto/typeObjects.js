@@ -108,6 +108,33 @@ const typeDotsItElement = (value) => ({
   value,
 });
 
+const typeObj = (props) => ({
+  type: 'obj',
+  props,
+});
+
+const typeSingleObjElement = (value) => ({
+  type: 'single',
+  value,
+});
+
+const typeDotsObjElement = (value) => ({
+  type: 'dots',
+  value,
+});
+
+const typeNameProp = (propName, value) => ({
+  type: 'nameprop',
+  propName,
+  value,
+});
+
+const typeRegexProp = (propRegex, value) => ({
+  type: 'regexprop',
+  propRegex,
+  value,
+});
+
 module.exports = {
   typeUndefined,
   typeBoolean,
@@ -132,5 +159,10 @@ module.exports = {
   typeCheckFun,
   typeIterable,
   typeSingleItElement,
-  typeDotsItElement
+  typeDotsItElement,
+  typeObj,
+  typeSingleObjElement,
+  typeDotsObjElement,
+  typeNameProp,
+  typeRegexProp
 };

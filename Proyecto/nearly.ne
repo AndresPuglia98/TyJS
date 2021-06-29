@@ -15,6 +15,8 @@ const lexer = moo.compile({
   lsqBracket: '[',
   rsqBracket: ']',
   times: '*',
+  colon: ':',
+  dotsInt: /\.\.\.\d+/,
   dots: '...',
   checkfuns: /\$\d+/,
   typeUndefined: 'undefined',
@@ -32,7 +34,8 @@ const lexer = moo.compile({
   typeByte: 'byte',
   typeAny: 'any',
   inValues: 'in',
-  positiveInt: /^\d+$/,
+  classIdentifier: /^[A-Z][_$A-Za-z0-9\xA0-\uFFFF]*$/,
+  identifier: /^(?!(?:do|if|in|for|let|new|try|var|case|else|enum|eval|false|null|this|true|void|with|break|catch|class|const|super|throw|while|yield|delete|export|import|public|return|static|switch|typeof|default|extends|finally|package|private|continue|debugger|function|arguments|interface|protected|implements|instanceof)$)[_$A-Za-z0-9\xA0-\uFFFF]+$/,
   whitespace: { 
     match: /(?: |(?:\n)|(?:\r)|(?:\t))+/, 
     lineBreaks: true 
@@ -87,17 +90,28 @@ params -> m {% ([m]) => m %}
 m -> valueType _ %comma _ m {% ([fst,,,,m]) => [fst].concat(m) %}
 m -> valueType {% ([fst]) => [fst] %}
 
-type -> %lsqBracket itParams %rsqBracket {% ([,params,]) => typeObjects.typeIterable(params) %}
+type -> %lsqBracket _ itParams _ %rsqBracket {% ([,,params,,]) => typeObjects.typeIterable(params) %}
 itParams -> p {% ([p]) => p %}
 p -> itType _ %comma _ p {% ([fst,,,,m]) => fst.concat(m) %}
 p -> itType {% ([fst]) => fst %}
 
+itType -> %dotsInt _ %times _ type {% ([n,,,,type]) => Array(+n.value.slice(3)).fill(typeObjects.typeSingleItElement(type)) %}
 itType -> %dots {% ([type]) => [typeObjects.typeDotsItElement(typeObjects.typeAny)] %}
-itType -> %dots %positiveInt _ %times _ type {% ([,n,,,,type]) => Array(n).fill(typeObjects.typeSingleItElement(type)) %}
 itType -> %dots type {% ([,type]) => [typeObjects.typeDotsItElement(type)] %}
 itType -> type {% ([type]) => [typeObjects.typeSingleItElement(type)] %}
 
+type -> %lcurlBracket _ props _ %rcurlBracket {% ([,,props,,]) => typeObjects.typeObj(props) %}
+props -> pl {% ([p]) => p %}
+pl -> prop _ %comma _ p {% ([fst,,,,m]) => fst.concat(m) %}
+pl -> prop {% ([fst]) => fst %}
 
+prop -> %dotsInt _ %times _ objProp {% ([n,,,,objProp]) => Array(+n.value.slice(3)).fill(typeObjects.typeSingleObjElement(objProp)) %}
+prop -> %dots {% ([objProp]) => [] %}
+prop -> %dots objProp {% ([,objProp]) => [typeObjects.typeDotsObjElement(objProp)] %}
+prop -> objProp {% ([objProp]) => [typeObjects.typeSingleObjElement(objProp)] %}
+
+objProp -> %identifier _ %colon _ type {% ([key,,,,type]) => typeObjects.typeNameProp(key, type) %}
+objProp -> %regex _ %colon _ type {% ([key,,,,type]) => typeObjects.typeRegexProp(key, type) %}
 
 
 # Optional whitespace

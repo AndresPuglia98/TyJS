@@ -103,3 +103,11 @@ console.log(tipo13.checks([1, 'a', 2]) === false);
 console.log(tipo13.checks([1, 4, 2]) === true);
 console.log(tipo13.checks([1, 4, 2, 6]) === false);
 console.log(tipo13.checks([1, 4]) === false);
+
+const tipo14 = new Type('{ prop1: number, prop2: string, .../re/: boolean }');
+console.dir(tipo14, { depth: null })
+console.log(tipo14.checks({ prop1: 1, prop2: 'abc'}) === true);
+console.log(tipo14.checks({ prop1: 1, prop2: 'abc', re: false}) === true);
+console.log(tipo14.checks({ prop1: 1, prop2: 'abc', sdasd: false}) === false);
+console.log(tipo14.checks({ prop1: 1, prop2: 'abc', re: 3}) === false);
+console.log(tipo14.checks({ prop1: 1, prop5: 'abc', re: false}) === false);
