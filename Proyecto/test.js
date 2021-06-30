@@ -117,3 +117,28 @@ console.dir(tipo15, { depth: null })
 console.log(tipo15.checks(new Set([3.14, "abc", 2, 3])) === false);
 console.log(tipo15.checks(new Set([3.14, 1e-4, 2, 3])) === true);
 console.log(tipo15.checks([3.14, 1e-4, 2, 3]) === false);
+
+const tipo16 = new Type('{ prop1: number, ...}');
+console.dir(tipo16, { depth: null })
+console.log(tipo16.checks({ prop1: 1, prop2: 'abc'}) === true);
+console.log(tipo16.checks({ prop1: 1, prop2: 'abc', re: false}) === true);
+console.log(tipo16.checks({ prop1: '1', prop2: 'abc', sdasd: false}) === false);
+console.log(tipo16.checks({ prop6: 1, prop2: 'abc', re: 3}) === false);
+
+const tipo17 = new Type('Array<number>');
+console.dir(tipo17, { depth: null })
+console.log(tipo17.checks(new Array(1, 3, 4, 5)) === true);
+console.log(tipo17.checks([1, 3, 3, 5]) === true);
+console.log(tipo17.checks(new Array(1, 3, 4, 'a')) === false);
+
+const tipo18 = new Type('Set<number>');
+console.dir(tipo18, { depth: null })
+console.log(tipo18.checks(new Set([1, 3, 4, 5])) === true);
+console.log(tipo18.checks(new Set([1, 3, 4, 'a'])) === false);
+console.log(tipo18.checks(new Array([1, 3, 4, 5])) === false);
+
+const tipo19 = new Type('Map<number, string>');
+console.dir(tipo19, { depth: null })
+console.log(tipo19.checks(new Map([[1, 'a'], [2, 'b']])) === true);
+console.log(tipo19.checks(new Map([[1, 'a'], [2, 3]])) === false);
+console.log(tipo19.checks(new Array([[1, 'a'], [2, 'b']])) === false);

@@ -16,6 +16,8 @@ const lexer = moo.compile({
   rsqBracket: ']',
   times: '*',
   colon: ':',
+  lessThan: '<',
+  moreThan: '>',
   dotsInt: /\.\.\.\d+/,
   dots: '...',
   checkfuns: /\$\d+/,
@@ -107,12 +109,39 @@ pl -> prop _ %comma _ pl {% ([fst,,,,m]) => fst.concat(m) %}
 pl -> prop {% ([fst]) => fst %}
 
 prop -> %dotsInt _ %times _ objProp {% ([n,,,,objProp]) => Array(+n.value.slice(3)).fill(typeObjects.typeSingleObjElement(objProp)) %}
-prop -> %dots {% ([objProp]) => [] %}
+prop -> %dots {% ([objProp]) => [typeObjects.typeDotsObjElement(typeObjects.typeRegexProp(new RegExp(/(?!(?:do|if|in|for|let|new|try|var|case|else|enum|eval|false|null|this|true|void|with|break|catch|class|const|super|throw|while|yield|delete|export|import|public|return|static|switch|typeof|default|extends|finally|package|private|continue|debugger|function|arguments|interface|protected|implements|instanceof)$)[_$A-Za-z\xA0-\uFFFF][_$A-Za-z0-9\xA0-\uFFFF]+/), typeObjects.typeAny))] %}
 prop -> %dots objProp {% ([,objProp]) => [typeObjects.typeDotsObjElement(objProp)] %}
 prop -> objProp {% ([objProp]) => [typeObjects.typeSingleObjElement(objProp)] %}
 
 objProp -> %identifier _ %colon _ type {% ([key,,,,type]) => typeObjects.typeNameProp(key.value, type) %}
 objProp -> %regex _ %colon _ type {% ([key,,,,type]) => typeObjects.typeRegexProp(new RegExp(key), type) %}
+
+type -> %classIdentifier %lessThan _ type _ %moreThan {% ([className,,,type,,]) => {
+  const left = typeObjects.typeClass(className);
+  const dots = typeObjects.typeDotsItElement(type);
+  const right = typeObjects.typeIterable([dots]);
+  const and = typeObjects.typeAnd(left, right);
+  return and;
+} %}
+
+type -> %classIdentifier %lessThan _ type _ %moreThan {% ([className,,,type,,]) => {
+  const left = typeObjects.typeClass(className);
+  const dots = typeObjects.typeDotsItElement(type);
+  const right = typeObjects.typeIterable([dots]);
+  const and = typeObjects.typeAnd(left, right);
+  return and;
+} %}
+
+type -> %classIdentifier %lessThan _ type _ %comma _ type _ %moreThan {% ([className,,,type1,,,,type2,,]) => {
+  const left = typeObjects.typeClass(className);
+  const key = typeObjects.typeSingleItElement(type1);
+  const value = typeObjects.typeSingleItElement(type2);
+  const keyVal = typeObjects.typeIterable([key, value]);
+  const dots = typeObjects.typeDotsItElement(keyVal);
+  const right = typeObjects.typeIterable([dots]);
+  const and = typeObjects.typeAnd(left, right);
+  return and;
+} %}
 
 
 # Optional whitespace
