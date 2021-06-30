@@ -118,6 +118,8 @@ class Type {
     parser.feed(type);
     this.parsedType = parser.finish()[0];
     this.checkFunctions = checkFunctions;
+    this.classCheckers = new Map();
+    this.classCheckers.set('Array', { class: Array, checker: (array, checkers) => {} });
   }
 
   checks(value) {
@@ -132,13 +134,15 @@ class Type {
     }
   }
 
-  classChecker() { }
+  classChecker() {
+
+  }
 }
 
 module.exports = Type;
 
 /* Type.classChecker(Set, (setValue, checkers) => {
   const [elemType] = checkers;
-  return checkers.length === 1 && [...setValue].all((elem) => elemType(elem));
+  return args.length === 1 && [...setValue].all((elem) => elemType(elem));
 }); */
 
