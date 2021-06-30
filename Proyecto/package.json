@@ -1,0 +1,17 @@
+{
+  "name": "tyjs",
+  "version": "1.0.0",
+  "description": "Final project for subject Formal Languages",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx jest",
+    "nearleyc": "nearleyc nearley.ne -o grammar.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "jest": "^27.0.6",
+    "moo": "^0.5.1",
+    "nearley": "^2.20.1"
+  }
+}
