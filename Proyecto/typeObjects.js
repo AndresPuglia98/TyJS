@@ -135,9 +135,10 @@ const typeRegexProp = (propRegex, value) => ({
   value,
 });
 
-const typeClass = (className) => ({
+const typeClass = (className, args) => ({
   type: 'class',
   className,
+  args,
 });
 
 

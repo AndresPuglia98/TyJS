@@ -1,4 +1,3 @@
-const { expect } = require('@jest/globals');
 const Type = require('./type.js');
 
 const isPrime = (num) => {

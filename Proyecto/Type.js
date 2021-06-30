@@ -1,6 +1,13 @@
 const nearley = require('nearley');
 const grammar = require('./grammar.js');
 
+/**
+ * 
+ * @param {*} typeObject 
+ * @param {*} checkFunctions 
+ * @param {*} value 
+ * @returns 
+ */
 const checks = (typeObject, checkFunctions, value) => {
   if (typeof typeObject !== 'object') {
     return typeObject === value;

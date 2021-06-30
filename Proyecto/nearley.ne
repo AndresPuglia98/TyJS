@@ -2,6 +2,7 @@
 const typeObjects = require('./typeObjects.js');
 const moo = require('moo');
 
+const identifierRegex = /(?!(?:do|if|in|for|let|new|try|var|case|else|enum|eval|false|null|this|true|void|with|break|catch|class|const|super|throw|while|yield|delete|export|import|public|return|static|switch|typeof|default|extends|finally|package|private|continue|debugger|function|arguments|interface|protected|implements|instanceof)$)[_$A-Za-z\xA0-\uFFFF][_$A-Za-z0-9\xA0-\uFFFF]+/;
 const lexer = moo.compile({
   comma: ',',
   true: 'true',
@@ -37,7 +38,7 @@ const lexer = moo.compile({
   typeAny: 'any',
   inValues: 'in',
   classIdentifier: /[A-Z][_$A-Za-z0-9\xA0-\uFFFF]*/,
-  identifier: /(?!(?:do|if|in|for|let|new|try|var|case|else|enum|eval|false|null|this|true|void|with|break|catch|class|const|super|throw|while|yield|delete|export|import|public|return|static|switch|typeof|default|extends|finally|package|private|continue|debugger|function|arguments|interface|protected|implements|instanceof)$)[_$A-Za-z\xA0-\uFFFF][_$A-Za-z0-9\xA0-\uFFFF]+/,
+  identifier: identifierRegex,
   whitespace: { 
     match: /(?: |(?:\n)|(?:\r)|(?:\t))+/, 
     lineBreaks: true 
@@ -57,6 +58,7 @@ const lexer = moo.compile({
 %}
 
 @lexer lexer
+@identifierRegex identifierRegex
 
 type -> %not type {% ([,t1]) => typeObjects.typeNot(t1) %}
 type -> type __ %and __ type {% ([t1,,,,t2]) => typeObjects.typeAnd(t1, t2) %}
@@ -79,7 +81,7 @@ type -> %typeByte {% ([value]) => typeObjects.typeByte %}
 type -> %typeAny {% ([value]) => typeObjects.typeAny %}
 type -> %regex {% ([value]) => typeObjects.typeRegex(new RegExp(value)) %}
 type -> %checkfuns {% ([value]) => typeObjects.typeCheckFun(+(value.value.slice(1))) %}
-type -> %classIdentifier {% ([value]) => typeObjects.typeClass(value.value) %}
+type -> %classIdentifier {% ([value]) => typeObjects.typeClass(value.value, []) %}
 
 type -> valueType {% ([valueType]) => valueType %}
 
@@ -109,28 +111,20 @@ pl -> prop _ %comma _ pl {% ([fst,,,,m]) => fst.concat(m) %}
 pl -> prop {% ([fst]) => fst %}
 
 prop -> %dotsInt _ %times _ objProp {% ([n,,,,objProp]) => Array(+n.value.slice(3)).fill(typeObjects.typeSingleObjElement(objProp)) %}
-prop -> %dots {% ([objProp]) => [typeObjects.typeDotsObjElement(typeObjects.typeRegexProp(new RegExp(/(?!(?:do|if|in|for|let|new|try|var|case|else|enum|eval|false|null|this|true|void|with|break|catch|class|const|super|throw|while|yield|delete|export|import|public|return|static|switch|typeof|default|extends|finally|package|private|continue|debugger|function|arguments|interface|protected|implements|instanceof)$)[_$A-Za-z\xA0-\uFFFF][_$A-Za-z0-9\xA0-\uFFFF]+/), typeObjects.typeAny))] %}
+prop -> %dots {% ([objProp]) => [typeObjects.typeDotsObjElement(typeObjects.typeRegexProp(new RegExp(identifierRegex), typeObjects.typeAny))] %}
 prop -> %dots objProp {% ([,objProp]) => [typeObjects.typeDotsObjElement(objProp)] %}
 prop -> objProp {% ([objProp]) => [typeObjects.typeSingleObjElement(objProp)] %}
 
 objProp -> %identifier _ %colon _ type {% ([key,,,,type]) => typeObjects.typeNameProp(key.value, type) %}
 objProp -> %regex _ %colon _ type {% ([key,,,,type]) => typeObjects.typeRegexProp(new RegExp(key), type) %}
 
-type -> %classIdentifier %lessThan _ type _ %moreThan {% ([className,,,type,,]) => {
-  const left = typeObjects.typeClass(className);
-  const dots = typeObjects.typeDotsItElement(type);
-  const right = typeObjects.typeIterable([dots]);
-  const and = typeObjects.typeAnd(left, right);
-  return and;
-} %}
+type -> %classIdentifier %lessThan _ args _ %moreThan {% ([className,,,args,,]) => typeObjects.typeClass(className.value, args) %}
+args -> a {% ([a]) => a %}
+a -> arg _ %comma _ a {% ([fst,,,,m]) => [fst].concat(m) %}
+a -> arg {% ([fst]) => [fst] %}
 
-type -> %classIdentifier %lessThan _ type _ %moreThan {% ([className,,,type,,]) => {
-  const left = typeObjects.typeClass(className);
-  const dots = typeObjects.typeDotsItElement(type);
-  const right = typeObjects.typeIterable([dots]);
-  const and = typeObjects.typeAnd(left, right);
-  return and;
-} %}
+
+
 
 type -> %classIdentifier %lessThan _ type _ %comma _ type _ %moreThan {% ([className,,,type1,,,,type2,,]) => {
   const left = typeObjects.typeClass(className);

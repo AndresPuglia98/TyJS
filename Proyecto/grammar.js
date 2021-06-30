@@ -6,6 +6,7 @@ function id(x) { return x[0]; }
 const typeObjects = require('./typeObjects.js');
 const moo = require('moo');
 
+const identifierRegex = /(?!(?:do|if|in|for|let|new|try|var|case|else|enum|eval|false|null|this|true|void|with|break|catch|class|const|super|throw|while|yield|delete|export|import|public|return|static|switch|typeof|default|extends|finally|package|private|continue|debugger|function|arguments|interface|protected|implements|instanceof)$)[_$A-Za-z\xA0-\uFFFF][_$A-Za-z0-9\xA0-\uFFFF]+/;
 const lexer = moo.compile({
   comma: ',',
   true: 'true',
@@ -41,7 +42,7 @@ const lexer = moo.compile({
   typeAny: 'any',
   inValues: 'in',
   classIdentifier: /[A-Z][_$A-Za-z0-9\xA0-\uFFFF]*/,
-  identifier: /(?!(?:do|if|in|for|let|new|try|var|case|else|enum|eval|false|null|this|true|void|with|break|catch|class|const|super|throw|while|yield|delete|export|import|public|return|static|switch|typeof|default|extends|finally|package|private|continue|debugger|function|arguments|interface|protected|implements|instanceof)$)[_$A-Za-z\xA0-\uFFFF][_$A-Za-z0-9\xA0-\uFFFF]+/,
+  identifier: identifierRegex,
   whitespace: { 
     match: /(?: |(?:\n)|(?:\r)|(?:\t))+/, 
     lineBreaks: true 
@@ -104,18 +105,11 @@ var grammar = {
     {"name": "pl", "symbols": ["prop", "_", (lexer.has("comma") ? {type: "comma"} : comma), "_", "pl"], "postprocess": ([fst,,,,m]) => fst.concat(m)},
     {"name": "pl", "symbols": ["prop"], "postprocess": ([fst]) => fst},
     {"name": "prop", "symbols": [(lexer.has("dotsInt") ? {type: "dotsInt"} : dotsInt), "_", (lexer.has("times") ? {type: "times"} : times), "_", "objProp"], "postprocess": ([n,,,,objProp]) => Array(+n.value.slice(3)).fill(typeObjects.typeSingleObjElement(objProp))},
-    {"name": "prop", "symbols": [(lexer.has("dots") ? {type: "dots"} : dots)], "postprocess": ([objProp]) => [typeObjects.typeDotsObjElement(typeObjects.typeRegexProp(new RegExp(/(?!(?:do|if|in|for|let|new|try|var|case|else|enum|eval|false|null|this|true|void|with|break|catch|class|const|super|throw|while|yield|delete|export|import|public|return|static|switch|typeof|default|extends|finally|package|private|continue|debugger|function|arguments|interface|protected|implements|instanceof)$)[_$A-Za-z\xA0-\uFFFF][_$A-Za-z0-9\xA0-\uFFFF]+/), typeObjects.typeAny))]},
+    {"name": "prop", "symbols": [(lexer.has("dots") ? {type: "dots"} : dots)], "postprocess": ([objProp]) => [typeObjects.typeDotsObjElement(typeObjects.typeRegexProp(new RegExp(identifierRegex), typeObjects.typeAny))]},
     {"name": "prop", "symbols": [(lexer.has("dots") ? {type: "dots"} : dots), "objProp"], "postprocess": ([,objProp]) => [typeObjects.typeDotsObjElement(objProp)]},
     {"name": "prop", "symbols": ["objProp"], "postprocess": ([objProp]) => [typeObjects.typeSingleObjElement(objProp)]},
     {"name": "objProp", "symbols": [(lexer.has("identifier") ? {type: "identifier"} : identifier), "_", (lexer.has("colon") ? {type: "colon"} : colon), "_", "type"], "postprocess": ([key,,,,type]) => typeObjects.typeNameProp(key.value, type)},
     {"name": "objProp", "symbols": [(lexer.has("regex") ? {type: "regex"} : regex), "_", (lexer.has("colon") ? {type: "colon"} : colon), "_", "type"], "postprocess": ([key,,,,type]) => typeObjects.typeRegexProp(new RegExp(key), type)},
-    {"name": "type", "symbols": [(lexer.has("classIdentifier") ? {type: "classIdentifier"} : classIdentifier), (lexer.has("lessThan") ? {type: "lessThan"} : lessThan), "_", "type", "_", (lexer.has("moreThan") ? {type: "moreThan"} : moreThan)], "postprocess":  ([className,,,type,,]) => {
-          const left = typeObjects.typeClass(className);
-          const dots = typeObjects.typeDotsItElement(type);
-          const right = typeObjects.typeIterable([dots]);
-          const and = typeObjects.typeAnd(left, right);
-          return and;
-        } },
     {"name": "type", "symbols": [(lexer.has("classIdentifier") ? {type: "classIdentifier"} : classIdentifier), (lexer.has("lessThan") ? {type: "lessThan"} : lessThan), "_", "type", "_", (lexer.has("moreThan") ? {type: "moreThan"} : moreThan)], "postprocess":  ([className,,,type,,]) => {
           const left = typeObjects.typeClass(className);
           const dots = typeObjects.typeDotsItElement(type);
