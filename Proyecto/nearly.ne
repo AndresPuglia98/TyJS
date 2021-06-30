@@ -34,8 +34,8 @@ const lexer = moo.compile({
   typeByte: 'byte',
   typeAny: 'any',
   inValues: 'in',
-  classIdentifier: /^[A-Z][_$A-Za-z0-9\xA0-\uFFFF]*$/,
-  identifier: /^(?!(?:do|if|in|for|let|new|try|var|case|else|enum|eval|false|null|this|true|void|with|break|catch|class|const|super|throw|while|yield|delete|export|import|public|return|static|switch|typeof|default|extends|finally|package|private|continue|debugger|function|arguments|interface|protected|implements|instanceof)$)[_$A-Za-z0-9\xA0-\uFFFF]+$/,
+  classIdentifier: /[A-Z][_$A-Za-z0-9\xA0-\uFFFF]*/,
+  identifier: /(?!(?:do|if|in|for|let|new|try|var|case|else|enum|eval|false|null|this|true|void|with|break|catch|class|const|super|throw|while|yield|delete|export|import|public|return|static|switch|typeof|default|extends|finally|package|private|continue|debugger|function|arguments|interface|protected|implements|instanceof)$)[_$A-Za-z\xA0-\uFFFF][_$A-Za-z0-9\xA0-\uFFFF]+/,
   whitespace: { 
     match: /(?: |(?:\n)|(?:\r)|(?:\t))+/, 
     lineBreaks: true 
@@ -77,6 +77,7 @@ type -> %typeByte {% ([value]) => typeObjects.typeByte %}
 type -> %typeAny {% ([value]) => typeObjects.typeAny %}
 type -> %regex {% ([value]) => typeObjects.typeRegex(new RegExp(value)) %}
 type -> %checkfuns {% ([value]) => typeObjects.typeCheckFun(+(value.value.slice(1))) %}
+type -> %classIdentifier {% ([value]) => typeObjects.typeClass(value.value) %}
 
 type -> valueType {% ([valueType]) => valueType %}
 
@@ -102,7 +103,7 @@ itType -> type {% ([type]) => [typeObjects.typeSingleItElement(type)] %}
 
 type -> %lcurlBracket _ props _ %rcurlBracket {% ([,,props,,]) => typeObjects.typeObj(props) %}
 props -> pl {% ([p]) => p %}
-pl -> prop _ %comma _ p {% ([fst,,,,m]) => fst.concat(m) %}
+pl -> prop _ %comma _ pl {% ([fst,,,,m]) => fst.concat(m) %}
 pl -> prop {% ([fst]) => fst %}
 
 prop -> %dotsInt _ %times _ objProp {% ([n,,,,objProp]) => Array(+n.value.slice(3)).fill(typeObjects.typeSingleObjElement(objProp)) %}
@@ -110,8 +111,8 @@ prop -> %dots {% ([objProp]) => [] %}
 prop -> %dots objProp {% ([,objProp]) => [typeObjects.typeDotsObjElement(objProp)] %}
 prop -> objProp {% ([objProp]) => [typeObjects.typeSingleObjElement(objProp)] %}
 
-objProp -> %identifier _ %colon _ type {% ([key,,,,type]) => typeObjects.typeNameProp(key, type) %}
-objProp -> %regex _ %colon _ type {% ([key,,,,type]) => typeObjects.typeRegexProp(key, type) %}
+objProp -> %identifier _ %colon _ type {% ([key,,,,type]) => typeObjects.typeNameProp(key.value, type) %}
+objProp -> %regex _ %colon _ type {% ([key,,,,type]) => typeObjects.typeRegexProp(new RegExp(key), type) %}
 
 
 # Optional whitespace

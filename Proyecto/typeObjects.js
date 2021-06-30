@@ -135,6 +135,12 @@ const typeRegexProp = (propRegex, value) => ({
   value,
 });
 
+const typeClass = (className) => ({
+  type: 'class',
+  className,
+});
+
+
 module.exports = {
   typeUndefined,
   typeBoolean,
@@ -164,5 +170,6 @@ module.exports = {
   typeSingleObjElement,
   typeDotsObjElement,
   typeNameProp,
-  typeRegexProp
+  typeRegexProp,
+  typeClass
 };

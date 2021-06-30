@@ -111,3 +111,9 @@ console.log(tipo14.checks({ prop1: 1, prop2: 'abc', re: false}) === true);
 console.log(tipo14.checks({ prop1: 1, prop2: 'abc', sdasd: false}) === false);
 console.log(tipo14.checks({ prop1: 1, prop2: 'abc', re: 3}) === false);
 console.log(tipo14.checks({ prop1: 1, prop5: 'abc', re: false}) === false);
+
+const tipo15 = new Type('Set & [...number]');
+console.dir(tipo15, { depth: null })
+console.log(tipo15.checks(new Set([3.14, "abc", 2, 3])) === false);
+console.log(tipo15.checks(new Set([3.14, 1e-4, 2, 3])) === true);
+console.log(tipo15.checks([3.14, 1e-4, 2, 3]) === false);

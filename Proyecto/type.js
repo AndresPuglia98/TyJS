@@ -58,22 +58,24 @@ const checks = (typeObject, checkFunctions, value) => {
           case 'dots':
             if (currentProp.done) break;
             while (checks(prop.value, checkFunctions, currentProp.value)) {
-              currentProp = valueIterator.next();
+              currentProp = objValueIterator.next();
               if (currentProp.done) break;
             }
             break;
           case 'single':
             if (currentProp.done) return false;
             if (!checks(prop.value, checkFunctions, currentProp.value)) return false;
-            currentProp = valueIterator.next();
+            currentProp = objValueIterator.next();
             break;
         }
       }
-      return currentItem.done;
+      return currentProp.done;
     case 'nameprop':
       return typeObject.propName === value[0] && checks(typeObject.value, checkFunctions, value[1]);
     case 'regexprop':
       return typeObject.propRegex.test(value[0]) && checks(typeObject.value, checkFunctions, value[1]);
+    case 'class':
+      return value instanceof globalThis[typeObject.className];
     case 'undefined':
     case 'boolean':
     case 'number':
