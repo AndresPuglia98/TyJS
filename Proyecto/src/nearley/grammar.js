@@ -3,7 +3,7 @@
 (function () {
 function id(x) { return x[0]; }
 
-const typeObjects = require('./typeObjects.js');
+const typeObjects = require('../lib/typeObjects.js');
 const moo = require('moo');
 
 const identifierRegex = /(?!(?:do|if|in|for|let|new|try|var|case|else|enum|eval|false|null|this|true|void|with|break|catch|class|const|super|throw|while|yield|delete|export|import|public|return|static|switch|typeof|default|extends|finally|package|private|continue|debugger|function|arguments|interface|protected|implements|instanceof)$)[_$A-Za-z\xA0-\uFFFF][_$A-Za-z0-9\xA0-\uFFFF]+/;
@@ -82,7 +82,7 @@ var grammar = {
     {"name": "type", "symbols": [(lexer.has("typeAny") ? {type: "typeAny"} : typeAny)], "postprocess": ([value]) => typeObjects.typeAny},
     {"name": "type", "symbols": [(lexer.has("regex") ? {type: "regex"} : regex)], "postprocess": ([value]) => typeObjects.typeRegex(new RegExp(value))},
     {"name": "type", "symbols": [(lexer.has("checkfuns") ? {type: "checkfuns"} : checkfuns)], "postprocess": ([value]) => typeObjects.typeCheckFun(+(value.value.slice(1)))},
-    {"name": "type", "symbols": [(lexer.has("classIdentifier") ? {type: "classIdentifier"} : classIdentifier)], "postprocess": ([value]) => typeObjects.typeClass(value.value)},
+    {"name": "type", "symbols": [(lexer.has("classIdentifier") ? {type: "classIdentifier"} : classIdentifier)], "postprocess": ([value]) => typeObjects.typeClass(value.value, [])},
     {"name": "type", "symbols": ["valueType"], "postprocess": ([valueType]) => valueType},
     {"name": "valueType", "symbols": [(lexer.has("true") ? {type: "true"} : true)], "postprocess": ([value]) => true},
     {"name": "valueType", "symbols": [(lexer.has("false") ? {type: "false"} : false)], "postprocess": ([value]) => false},
@@ -110,23 +110,10 @@ var grammar = {
     {"name": "prop", "symbols": ["objProp"], "postprocess": ([objProp]) => [typeObjects.typeSingleObjElement(objProp)]},
     {"name": "objProp", "symbols": [(lexer.has("identifier") ? {type: "identifier"} : identifier), "_", (lexer.has("colon") ? {type: "colon"} : colon), "_", "type"], "postprocess": ([key,,,,type]) => typeObjects.typeNameProp(key.value, type)},
     {"name": "objProp", "symbols": [(lexer.has("regex") ? {type: "regex"} : regex), "_", (lexer.has("colon") ? {type: "colon"} : colon), "_", "type"], "postprocess": ([key,,,,type]) => typeObjects.typeRegexProp(new RegExp(key), type)},
-    {"name": "type", "symbols": [(lexer.has("classIdentifier") ? {type: "classIdentifier"} : classIdentifier), (lexer.has("lessThan") ? {type: "lessThan"} : lessThan), "_", "type", "_", (lexer.has("moreThan") ? {type: "moreThan"} : moreThan)], "postprocess":  ([className,,,type,,]) => {
-          const left = typeObjects.typeClass(className);
-          const dots = typeObjects.typeDotsItElement(type);
-          const right = typeObjects.typeIterable([dots]);
-          const and = typeObjects.typeAnd(left, right);
-          return and;
-        } },
-    {"name": "type", "symbols": [(lexer.has("classIdentifier") ? {type: "classIdentifier"} : classIdentifier), (lexer.has("lessThan") ? {type: "lessThan"} : lessThan), "_", "type", "_", (lexer.has("comma") ? {type: "comma"} : comma), "_", "type", "_", (lexer.has("moreThan") ? {type: "moreThan"} : moreThan)], "postprocess":  ([className,,,type1,,,,type2,,]) => {
-          const left = typeObjects.typeClass(className);
-          const key = typeObjects.typeSingleItElement(type1);
-          const value = typeObjects.typeSingleItElement(type2);
-          const keyVal = typeObjects.typeIterable([key, value]);
-          const dots = typeObjects.typeDotsItElement(keyVal);
-          const right = typeObjects.typeIterable([dots]);
-          const and = typeObjects.typeAnd(left, right);
-          return and;
-        } },
+    {"name": "type", "symbols": [(lexer.has("classIdentifier") ? {type: "classIdentifier"} : classIdentifier), (lexer.has("lessThan") ? {type: "lessThan"} : lessThan), "_", "args", "_", (lexer.has("moreThan") ? {type: "moreThan"} : moreThan)], "postprocess": ([className,,,args,,]) => typeObjects.typeClass(className.value, args)},
+    {"name": "args", "symbols": ["a"], "postprocess": ([a]) => a},
+    {"name": "a", "symbols": ["type", "_", (lexer.has("comma") ? {type: "comma"} : comma), "_", "a"], "postprocess": ([fst,,,,m]) => [fst].concat(m)},
+    {"name": "a", "symbols": ["type"], "postprocess": ([fst]) => [fst]},
     {"name": "_$ebnf$1", "symbols": []},
     {"name": "_$ebnf$1", "symbols": ["_$ebnf$1", (lexer.has("whitespace") ? {type: "whitespace"} : whitespace)], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
     {"name": "_", "symbols": ["_$ebnf$1"]},

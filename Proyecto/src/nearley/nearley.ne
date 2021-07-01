@@ -1,5 +1,5 @@
 @{%
-const typeObjects = require('./typeObjects.js');
+const typeObjects = require('../lib/typeObjects.js');
 const moo = require('moo');
 
 const identifierRegex = /(?!(?:do|if|in|for|let|new|try|var|case|else|enum|eval|false|null|this|true|void|with|break|catch|class|const|super|throw|while|yield|delete|export|import|public|return|static|switch|typeof|default|extends|finally|package|private|continue|debugger|function|arguments|interface|protected|implements|instanceof)$)[_$A-Za-z\xA0-\uFFFF][_$A-Za-z0-9\xA0-\uFFFF]+/;
@@ -120,23 +120,8 @@ objProp -> %regex _ %colon _ type {% ([key,,,,type]) => typeObjects.typeRegexPro
 
 type -> %classIdentifier %lessThan _ args _ %moreThan {% ([className,,,args,,]) => typeObjects.typeClass(className.value, args) %}
 args -> a {% ([a]) => a %}
-a -> arg _ %comma _ a {% ([fst,,,,m]) => [fst].concat(m) %}
-a -> arg {% ([fst]) => [fst] %}
-
-
-
-
-type -> %classIdentifier %lessThan _ type _ %comma _ type _ %moreThan {% ([className,,,type1,,,,type2,,]) => {
-  const left = typeObjects.typeClass(className);
-  const key = typeObjects.typeSingleItElement(type1);
-  const value = typeObjects.typeSingleItElement(type2);
-  const keyVal = typeObjects.typeIterable([key, value]);
-  const dots = typeObjects.typeDotsItElement(keyVal);
-  const right = typeObjects.typeIterable([dots]);
-  const and = typeObjects.typeAnd(left, right);
-  return and;
-} %}
-
+a -> type _ %comma _ a {% ([fst,,,,m]) => [fst].concat(m) %}
+a -> type {% ([fst]) => [fst] %}
 
 # Optional whitespace
 _ -> %whitespace:*

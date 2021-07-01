@@ -1,4 +1,3 @@
-// Singleton? undefined y null
 const typeUndefined = {
   type: 'undefined',
 };
@@ -141,7 +140,6 @@ const typeClass = (className, args) => ({
   args,
 });
 
-
 module.exports = {
   typeUndefined,
   typeBoolean,
@@ -172,5 +170,5 @@ module.exports = {
   typeDotsObjElement,
   typeNameProp,
   typeRegexProp,
-  typeClass
+  typeClass,
 };
