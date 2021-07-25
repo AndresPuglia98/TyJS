@@ -164,7 +164,7 @@ const checks = (type, value) => {
     case 'bigint':
       return typeObject.type === typeof value;
     case 'void':
-      return typeof value === 'null' || typeof value === 'undefined';
+      return value === null || value === undefined;
     case 'int':
       const reI = new RegExp(/^(?:\d+)(?:[Ee](?:[\+\-])?(?:\d+))?$/);
       return typeof value === 'number' && reI.test(value.toString());
